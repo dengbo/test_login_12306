@@ -83,6 +83,7 @@ public class MainActivity extends Activity {
 			// TODO Auto-generated method stub
 			Thread loginThread = new Thread(sendLogin);
 			loginThread.start();
+			//add in web
 			Log.v("main", "login");
 		}
 	};
@@ -162,9 +163,9 @@ public class MainActivity extends Activity {
 				initTrustAllSSL();
 				HttpsURLConnection mConnection = (HttpsURLConnection) mURL
 						.openConnection();
-				mConnection.setDoOutput(true);// Ê¹ÓÃ URL Á¬½Ó½øÐÐÊä³ö
-				mConnection.setDoInput(true);// Ê¹ÓÃ URL Á¬½Ó½øÐÐÊäÈë
-				mConnection.setUseCaches(false);// ºöÂÔ»º´æ
+				mConnection.setDoOutput(true);// Ê¹ï¿½ï¿½ URL ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				mConnection.setDoInput(true);// Ê¹ï¿½ï¿½ URL ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				mConnection.setUseCaches(false);// ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½
 				mConnection.setConnectTimeout(5 * 1000);
 				mConnection.setRequestMethod("POST");
 				mConnection.setRequestProperty("Accept",
@@ -175,11 +176,11 @@ public class MainActivity extends Activity {
 				if (respondCode == HttpURLConnection.HTTP_OK) {
 					InputStreamReader in = new InputStreamReader(
 							mConnection.getInputStream());
-					// ÎªÊä³ö´´½¨BufferedReader
+					// Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½BufferedReader
 					BufferedReader buffer = new BufferedReader(in);
 					String inputLine = null;
 					String inputString = "";
-					// Ê¹ÓÃÑ­»·À´¶ÁÈ¡»ñµÃµÄÊý¾Ý
+					// Ê¹ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½
 					while (((inputLine = buffer.readLine()) != null)) {
 						inputString += inputLine + "\n";
 					}
@@ -192,7 +193,7 @@ public class MainActivity extends Activity {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					// ¹Ø±ÕInputStreamReader
+					// ï¿½Ø±ï¿½InputStreamReader
 					in.close();
 					mConnection.disconnect();
 					Log.v("main", randString + "," + errorString);
@@ -202,9 +203,9 @@ public class MainActivity extends Activity {
 					initTrustAllSSL();
 					HttpsURLConnection mConnection_post = (HttpsURLConnection) mUrl_post
 							.openConnection();
-					mConnection_post.setDoOutput(true);// Ê¹ÓÃ URL Á¬½Ó½øÐÐÊä³ö
-					mConnection_post.setDoInput(true);// Ê¹ÓÃ URL Á¬½Ó½øÐÐÊäÈë
-					mConnection_post.setUseCaches(false);// ºöÂÔ»º´æ
+					mConnection_post.setDoOutput(true);// Ê¹ï¿½ï¿½ URL ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					mConnection_post.setDoInput(true);// Ê¹ï¿½ï¿½ URL ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					mConnection_post.setUseCaches(false);// ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½
 					mConnection_post.setConnectTimeout(5 * 1000);
 					mConnection_post.setRequestMethod("POST");
 					mConnection_post.setRequestProperty("Accept",
@@ -227,21 +228,21 @@ public class MainActivity extends Activity {
 					Log.v("main", postContent);
 					dos.write(postContent.getBytes());
 					dos.flush();
-					// Ö´ÐÐÍêdos.close()ºó£¬POSTÇëÇó½áÊø
+					// Ö´ï¿½ï¿½ï¿½ï¿½dos.close()ï¿½ï¿½ï¿½ï¿½POSTï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					dos.close();
-					// µÃµ½¶ÁÈ¡µÄÄÚÈÝ(Á÷)
+					// ï¿½Ãµï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½)
 					InputStreamReader in_post = new InputStreamReader(
 							mConnection_post.getInputStream());
-					// ÎªÊä³ö´´½¨BufferedReader
+					// Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½BufferedReader
 					BufferedReader buffer_post = new BufferedReader(in_post);
 					String inputLine_post = null;
 					StringBuilder resultData = new StringBuilder();
-					// Ê¹ÓÃÑ­»·À´¶ÁÈ¡»ñµÃµÄÊý¾Ý
+					// Ê¹ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½
 					while (((inputLine_post = buffer_post.readLine()) != null)) {
 						resultData.append(inputLine_post);
 					}
 					Log.v("main resultData", resultData.toString());
-					// ¹Ø±ÕInputStreamReader
+					// ï¿½Ø±ï¿½InputStreamReader
 					in_post.close();
 					if (resultData != null && resultData.length() != 0) {
 						Message message = new Message();
