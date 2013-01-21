@@ -14,6 +14,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -27,13 +29,12 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+
 import android.app.Activity;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -42,6 +43,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -66,6 +68,11 @@ public class MainActivity extends Activity {
 		Thread mThread = new Thread(downCheckImg);
 		Log.v("main", "start_thread");
 		mThread.start();
+
+		//test
+//		HashMap<String, String> map = new HashMap<String, String>();
+//		Set<String> set = map.keySet();
+//		Log.v("main", set.size()+"");
 	}
 
 	@Override
@@ -104,8 +111,13 @@ public class MainActivity extends Activity {
 				// set return data
 				String result = msg.getData().getString("result");
 				Document document = Jsoup.parse(result);
-				
+
 				mTextView.setText(result);
+				break;
+			case 3:
+				// yupiao
+				String yupiao = msg.getData().getString("yupiao");
+				mTextView.setText(yupiao);
 				break;
 			}
 		};
@@ -143,7 +155,38 @@ public class MainActivity extends Activity {
 			}
 		}
 	};
+	// refresh check picture
+		public Runnable refreshCheckImg = new Runnable() {
 
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				try {
+					double rand = Math.random();
+					URL mURL = new URL(
+							"https://dynamic.12306.cn/otsweb/passCodeAction.do?rand=sjrand&"+rand);
+					initTrustAllSSL();
+					HttpsURLConnection mConnection = (HttpsURLConnection) mURL
+							.openConnection();
+					mConnection.setConnectTimeout(5 * 1000);
+					mConnection.setRequestMethod("GET");
+					mConnection.setRequestProperty("Accept",
+							"image/png, image/svg+xml, image/*;q=0.8, */*;q=0.5");
+					InputStream mInputStream = mConnection.getInputStream();
+					mBitmapDrawable = new BitmapDrawable(mInputStream);
+					mHandler.sendEmptyMessage(1);
+					mInputStream.close();
+					mConnection.disconnect();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
 	// send login request
 	private Runnable sendLogin = new Runnable() {
 
@@ -162,9 +205,9 @@ public class MainActivity extends Activity {
 				initTrustAllSSL();
 				HttpsURLConnection mConnection = (HttpsURLConnection) mURL
 						.openConnection();
-				mConnection.setDoOutput(true);// Ê¹ÓÃ URL Á¬½Ó½øÐÐÊä³ö
-				mConnection.setDoInput(true);// Ê¹ÓÃ URL Á¬½Ó½øÐÐÊäÈë
-				mConnection.setUseCaches(false);// ºöÂÔ»º´æ
+				mConnection.setDoOutput(true);// Ê¹ï¿½ï¿½ URL ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				mConnection.setDoInput(true);// Ê¹ï¿½ï¿½ URL ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				mConnection.setUseCaches(false);// ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½
 				mConnection.setConnectTimeout(5 * 1000);
 				mConnection.setRequestMethod("POST");
 				mConnection.setRequestProperty("Accept",
@@ -175,11 +218,11 @@ public class MainActivity extends Activity {
 				if (respondCode == HttpURLConnection.HTTP_OK) {
 					InputStreamReader in = new InputStreamReader(
 							mConnection.getInputStream());
-					// ÎªÊä³ö´´½¨BufferedReader
+					// Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½BufferedReader
 					BufferedReader buffer = new BufferedReader(in);
 					String inputLine = null;
 					String inputString = "";
-					// Ê¹ÓÃÑ­»·À´¶ÁÈ¡»ñµÃµÄÊý¾Ý
+					// Ê¹ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½
 					while (((inputLine = buffer.readLine()) != null)) {
 						inputString += inputLine + "\n";
 					}
@@ -192,7 +235,7 @@ public class MainActivity extends Activity {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					// ¹Ø±ÕInputStreamReader
+					// ï¿½Ø±ï¿½InputStreamReader
 					in.close();
 					mConnection.disconnect();
 					Log.v("main", randString + "," + errorString);
@@ -202,46 +245,67 @@ public class MainActivity extends Activity {
 					initTrustAllSSL();
 					HttpsURLConnection mConnection_post = (HttpsURLConnection) mUrl_post
 							.openConnection();
-					mConnection_post.setDoOutput(true);// Ê¹ÓÃ URL Á¬½Ó½øÐÐÊä³ö
-					mConnection_post.setDoInput(true);// Ê¹ÓÃ URL Á¬½Ó½øÐÐÊäÈë
-					mConnection_post.setUseCaches(false);// ºöÂÔ»º´æ
+					mConnection_post.setDoOutput(true);// Ê¹ï¿½ï¿½ URL ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					mConnection_post.setDoInput(true);// Ê¹ï¿½ï¿½ URL ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					mConnection_post.setUseCaches(false);// ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½
 					mConnection_post.setConnectTimeout(5 * 1000);
 					mConnection_post.setRequestMethod("POST");
+					/*
+					 *
+Referer	https://dynamic.12306.cn/otsweb/loginAction.do?method=init
+Accept-Language	zh-CN
+User-Agent	Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)
+Content-Type	application/x-www-form-urlencoded
+Accept-Encoding	gzip, deflate
+Host	dynamic.12306.cn
+Content-Length	168
+Connection	Keep-Alive
+Cache-Control	no-cache
+Cookie	JSESSIONID=CBE19EE88FC7AB1F8A07561321D2067E; BIGipServerotsweb=2463367434.62495.0000; BIGipServerotsquery=2379809034.59425.0000
+					 */
 					mConnection_post.setRequestProperty("Accept",
 							"text/html, application/xhtml+xml, */*");
+					mConnection_post.setRequestProperty("Referer",
+							"https://dynamic.12306.cn/otsweb/loginAction.do?method=init");
+					mConnection_post.setRequestProperty("Accept-Language",
+							"zh-CN");
+					mConnection_post.setRequestProperty("User-Agent",
+							"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)");
 					mConnection_post.setRequestProperty("Connection",
 							"keep-Alive");
+					mConnection_post.setRequestProperty("Host",
+							"dynamic.12306.cn");
+					mConnection_post.setRequestProperty("Content-Length",
+							"168");
+					mConnection_post.setRequestProperty("Cache-Control",
+							"no-cache");
+					mConnection_post.setRequestProperty("Cookie",
+							"JSESSIONID=CBE19EE88FC7AB1F8A07561321D2067E; BIGipServerotsweb=2463367434.62495.0000; BIGipServerotsquery=2379809034.59425.0000");
+					mConnection_post.setRequestProperty("Accept-Encoding",
+							"gzip, deflate");
 					mConnection_post.setRequestProperty("Content-Type",
 							"application/x-www-form-urlencoded");
 					DataOutputStream dos = new DataOutputStream(
 							mConnection_post.getOutputStream());
-					String postContent = URLEncoder
-							.encode("loginRand="
-									+ randString
-									+ "&refundLogin=N&refundFlag=Y&loginUser.user_name="
-									+ userString
-									+ "&nameErrorFocus=&user.password="
-									+ passwordString
-									+ "&passwordErrorFocus=&randCode="
-									+ checkString + "&randErrorFocus=", "UTF-8");
+					String postContent = "loginRand=780&refundLogin=N&refundFlag=&loginUser.user_name=dengbodb@sina.com&nameErrorFocus=&user.password=03170822l&passwordErrorFocus=&randCode=2WKT&randErrorFocus=";
 					Log.v("main", postContent);
 					dos.write(postContent.getBytes());
 					dos.flush();
-					// Ö´ÐÐÍêdos.close()ºó£¬POSTÇëÇó½áÊø
+					// Ö´ï¿½ï¿½ï¿½ï¿½dos.close()ï¿½ï¿½POSTï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					dos.close();
-					// µÃµ½¶ÁÈ¡µÄÄÚÈÝ(Á÷)
+					// ï¿½Ãµï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½)
 					InputStreamReader in_post = new InputStreamReader(
 							mConnection_post.getInputStream());
-					// ÎªÊä³ö´´½¨BufferedReader
+					// Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½BufferedReader
 					BufferedReader buffer_post = new BufferedReader(in_post);
 					String inputLine_post = null;
 					StringBuilder resultData = new StringBuilder();
-					// Ê¹ÓÃÑ­»·À´¶ÁÈ¡»ñµÃµÄÊý¾Ý
+					// Ê¹ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½
 					while (((inputLine_post = buffer_post.readLine()) != null)) {
 						resultData.append(inputLine_post);
 					}
 					Log.v("main resultData", resultData.toString());
-					// ¹Ø±ÕInputStreamReader
+					// ï¿½Ø±ï¿½InputStreamReader
 					in_post.close();
 					if (resultData != null && resultData.length() != 0) {
 						Message message = new Message();
@@ -253,6 +317,54 @@ public class MainActivity extends Activity {
 					}
 				}
 
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	};
+
+	//yupiao
+	private Runnable yupiaoRunnable = new Runnable() {
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			try {
+				URL mURL = new URL(
+						"http://dynamic.12306.cn/otsquery/query/queryRemanentTicketAction.do?method=queryLeftTicket&orderRequest.train_date=2012-12-13&orderRequest.from_station_telecode=BJP&orderRequest.to_station_telecode=SHH&orderRequest.train_no=&trainPassType=QB&trainClass=QB#D#Z#T#K#QT#&includeStudent=00&seatTypeAndNum=&orderRequest.start_time_str=00:00--24:00");
+				HttpURLConnection mConnection = (HttpURLConnection) mURL.openConnection();
+				mConnection.setConnectTimeout(5 * 1000);
+				mConnection.setRequestMethod("GET");
+				mConnection.setRequestProperty("Accept",
+						"application/json, text/javascript, */*");
+				mConnection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+				mConnection.setRequestProperty("Cookie","BIGipServerotsquery=2379809034.59425.0000;JSESSIONID=8A2C1F1B4C2D1CB501147EBC613B4250; BIGipServerotsweb=2228486410.48160.0000");
+				// ï¿½Ãµï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½)
+				InputStreamReader in = new InputStreamReader(
+						mConnection.getInputStream());
+				// Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½BufferedReader
+				BufferedReader buffer_post = new BufferedReader(in);
+				String inputLine_post = null;
+				StringBuilder resultData = new StringBuilder();
+				// Ê¹ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½
+				while (((inputLine_post = buffer_post.readLine()) != null)) {
+					resultData.append(inputLine_post);
+				}
+				// ï¿½Ø±ï¿½InputStreamReader
+				in.close();
+				if (resultData != null && resultData.length() != 0) {
+					Message message = new Message();
+					message.what = 3;
+					Bundle mBundle = new Bundle();
+					mBundle.putString("yupiao", resultData.toString());
+					message.setData(mBundle);
+					mHandler.sendMessage(message);
+				}
+				mConnection.disconnect();
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
